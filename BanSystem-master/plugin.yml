@@ -1,0 +1,16 @@
+name: BanSystem
+main: ban\Ban
+version: er.β
+api:
+  - 3.0.0
+  - 3.0.0-ALPHA10
+author: fujiwaraizuho
+description: This is BanSystem
+website: https://twitter.com/fujiwaraizuho
+commands:
+  /ban:
+    description: This is BanSystem Command
+    usage: //ban
+  /testuser:
+    description: This is BanSystem Command
+    usage: //testuser  
