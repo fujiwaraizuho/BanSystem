@@ -163,6 +163,8 @@ class DB
 			$i++;
 		}
 
+		$data["id"] = $i;
+
 		if (empty($result)) {
 			$this->owner->logger->warning("User List Not Found！");
 			return false;

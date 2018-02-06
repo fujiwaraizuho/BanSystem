@@ -106,6 +106,26 @@ class EventListener implements Listener
 				if (!empty($formData[0])) {
 
 					$data = $this->db->search_player($formData[0]);
+					$list = $this->db->search_list_player($formData[0]);
+
+					$formData = [
+						"type" => "form",
+						"title" => "§l検索結果",
+						"content" => "",
+						"buttons" => []
+					];
+
+					for ($i = 0; $i < $list["id"]; $i++) { 
+						$name = $list[$i]["name"];
+						$formData["buttons"][] = ["text" => $name]; 
+					}
+
+					$pk = new ModalFormRequestPacket();
+
+					$pk->formId = 1111;
+					$pk->formData = json_encode($formData);
+
+					$player->dataPacket($pk);
 
 					if (!empty($data)) {
 						$player->sendMessage("§aNAME§f => ". $data["name"]);
