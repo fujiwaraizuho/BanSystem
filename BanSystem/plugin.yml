@@ -4,6 +4,7 @@ version: er.β
 api:
   - 3.0.0
   - 3.0.0-ALPHA10
+  - 3.0.0-ALPHA11
 author: fujiwaraizuho
 description: This is BanSystem
 website: https://twitter.com/fujiwaraizuho
