@@ -88,21 +88,6 @@ class Ban extends PluginBase
 
 				return true;
 				break;
-
-			/** TEST COMMAND */
-			case "/testuser":
-			
-				if (!isset($args[0])) return false;
-
-				if ($args[0] === "add") {
-				    if (!isset($args[1])) return false;
-					$this->db->add_test_user($args[1]);
-				} else if ($args[0] === "remove") {
-					$this->db->remove_test_user();
-				}
-
-				return true;
-				break;
 		}
 	}
 }

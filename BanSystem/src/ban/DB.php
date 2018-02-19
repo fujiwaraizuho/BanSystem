@@ -61,38 +61,6 @@ class DB
 		$this->owner->logger->notice($name. " Register Account！");
 	}
 
-    /** TEST CODE START */
-    public function add_test_user(string $name)
-	{
-		$value = "INSERT INTO userdata (name,xuid, ip, cid, uuid, host) VALUES (:name, :xuid, :ip, :cid, :uuid, :host)";
-		$db = $this->db->prepare($value);
-
-		$db->bindValue(":name", $name, SQLITE3_TEXT);
-		$db->bindValue(":xuid", "TEST_USER", SQLITE3_TEXT);
-		$db->bindValue(":ip", "TEST_USER", SQLITE3_TEXT);
-		$db->bindValue(":cid", "TEST_USER", SQLITE3_TEXT);
-		$db->bindValue(":uuid", "TEST_USER", SQLITE3_TEXT);
-		$db->bindValue(":host", "TEST_USER", SQLITE3_TEXT);
-
-		$db->execute();
-
-		$this->owner->logger->notice($name. " Register Account！");
-	}
-
-
-    public function remove_test_user(string $name)
-	{
-		$value = "DELETE FROM userdata WHERE name = :name";
-		$db = $this->db->prepare($value);
-
-		$db->bindValue(":name", $name, SQLITE3_TEXT);
-
-		$db->execute();
-
-		$this->owner->logger->notice($name. " Delete Account！");
-	}
-	/** TEST CODE END */
-
 
     /**
      * @param string $name
