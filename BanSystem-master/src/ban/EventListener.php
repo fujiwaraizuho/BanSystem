@@ -57,21 +57,22 @@ class EventListener implements Listener
 
 			// ONLINE or OFFLINE SELECT FORM
 			if (is_null($formData)) return;
-			if ($formId === (int) $player->formId[Ban::SELECT_IS_TOP]) {
+			if (!array_key_exists(Ban::PLUGIN_NAME, $player->formId)) return;
+			if ($formId === (int) $player->formId[Ban::PLUGIN_NAME][Ban::SELECT_IS_TOP]) {
 
 				switch ($formData) {
 
 					case Ban::IS_ONLINE:
 
 						$player->addTitle("§l§aSelected Online button！");
-						$player->formId[Ban::SELECT_IS_TOP] = null;
+						$player->formId[Ban::PLUGIN_NAME][Ban::SELECT_IS_TOP] = null;
 
 						break;
 						
 					case Ban::IS_OFFLINE:
 
 						$player->addTitle("§l§cSelected Offline button！");
-						$player->formId[Ban::SELECT_IS_TOP] = null;
+						$player->formId[Ban::PLUGIN_NAME][Ban::SELECT_IS_TOP] = null;
 
 						break;
 
@@ -94,20 +95,23 @@ class EventListener implements Listener
 						$pk->formId = ($formId = mt_rand(1, 999999999));
 						$pk->formData = json_encode($data);
 
-						$player->formId[Ban::SEARCH_PLAYER_TOP] = $formId;
+						$player->formId[Ban::PLUGIN_NAME][Ban::SEARCH_PLAYER_TOP] = $formId;
 
 						$player->dataPacket($pk);
-						$player->formId[Ban::SELECT_IS_TOP] = null;
+						$player->formId[Ban::PLUGIN_NAME][Ban::SELECT_IS_TOP] = null;
 
 						break;
 				}
 
-			} else if ($formId === (int) $player->formId[Ban::SEARCH_PLAYER_TOP]) {
+			} else if ($formId === (int) $player->formId[Ban::PLUGIN_NAME][Ban::SEARCH_PLAYER_TOP]) {
 				if (!empty($formData[0])) {
+				    if (strlen($formData[0]) >= 15) {
+				        $player->sendMessage("§c>> 名前が15文字以上のプレイヤーなんて存在しないんだよ？");
+                        $player->formId[Ban::PLUGIN_NAME][Ban::SEARCH_PLAYER_TOP] = null;
+                        return;
+                    }
 
-					$data = $this->db->search_player($formData[0]);
 					$list = $this->db->search_list_player($formData[0]);
-
 					$formData = [
 						"type" => "form",
 						"title" => "§l検索結果",
@@ -115,35 +119,60 @@ class EventListener implements Listener
 						"buttons" => []
 					];
 
-					for ($i = 0; $i < $list["id"]; $i++) { 
-						$name = $list[$i]["name"];
-						$formData["buttons"][] = ["text" => $name]; 
+					for ($i = 0; $i < $list["amount"]; $i++) {
+						$name = $list[$i];
+						$formData["buttons"][] = ["text" => $name];
+                        $playerlist[] = $name;
 					}
 
 					$pk = new ModalFormRequestPacket();
 
-					$pk->formId = 1111;
+					$pk->formId = ($formId = mt_rand(1, 999999999));
 					$pk->formData = json_encode($formData);
 
 					$player->dataPacket($pk);
 
-					if (!empty($data)) {
-						$player->sendMessage("§aNAME§f => ". $data["name"]);
-						$player->sendMessage("§aXUID§f => ". $data["xuid"]);
-						$player->sendMessage("§aIP§f   => ". $data["ip"]);
-						$player->sendMessage("§aCID§f  => ". $data["cid"]);
-						$player->sendMessage("§aUUID§f => ". $data["uuid"]);
-						$player->sendMessage("§aHOST§f => ". $data["host"]);
-					} else {
-						$player->sendMessage("§c>> データーが登録されていません！");
-					}
-
-					$player->formId[Ban::SEARCH_PLAYER_TOP] = null;
+					$player->list = $playerlist;
+					$player->formId[Ban::PLUGIN_NAME][Ban::SEARCH_PLAYER_SELECT] = $formId;
+                    $player->formId[Ban::PLUGIN_NAME][Ban::SEARCH_PLAYER_TOP] = null;
 				} else {
 					$player->sendMessage("§c>> 名前がないプレイヤーなんて存在しないんだよ？");
-					$player->formId[Ban::SEARCH_PLAYER_TOP] = null;
+					$player->formId[Ban::PLUGIN_NAME][Ban::SEARCH_PLAYER_TOP] = null;
 				}
-			}
+
+			} else if ($formId === (int) $player->formId[Ban::PLUGIN_NAME][Ban::SEARCH_PLAYER_SELECT]) {
+			    if (isset($formData)) {
+                    if (isset($player->list)) {
+                        $searchName = $player->list[$formData];
+                        $playerData = $this->db->search_player($searchName);
+
+                        $data = [
+                            "type" => "form",
+                            "title" => "§l". $searchName ."様の情報",
+                            "content" => "§a[ XUID ]\n".
+                                         "§f". $playerData["xuid"] ."\n\n".
+                                         "§a[ IP ]\n".
+                                         "§f". $playerData["ip"] ."\n\n".
+                                         "§a[ CID ]\n".
+                                         "§f". $playerData["cid"] ."\n\n".
+                                         "§a[ HOST ]\n".
+                                         "§f". $playerData["host"] ."\n\n".
+                                         "§l§c情報の取り扱いには注意してください！",
+                            "buttons" => []
+                        ];
+
+                        $pk = new ModalFormRequestPacket();
+
+                        $pk->formId = mt_rand(1, 999999999);
+                        $pk->formData = json_encode($data);
+
+                        $player->dataPacket($pk);
+
+                        $player->formId[Ban::PLUGIN_NAME][Ban::SEARCH_PLAYER_SELECT] = null;
+                        unset($player->list);
+                    }
+                }
+            }
 		}	
 	}
 }

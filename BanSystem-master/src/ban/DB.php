@@ -158,12 +158,12 @@ class DB
 		while ($res = $result->fetchArray(SQLITE3_ASSOC)) {
 			if (!isset($res["name"])) continue;
 
-			$data[$i]["name"] = $res["name"];
+			$data[$i] = $res["name"];
 
 			$i++;
 		}
 
-		$data["id"] = $i;
+		$data["amount"] = $i;
 
 		if (empty($result)) {
 			$this->owner->logger->warning("User List Not Found！");

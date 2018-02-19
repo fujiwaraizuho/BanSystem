@@ -15,9 +15,13 @@ use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 
 class Ban extends PluginBase
 {
+	/* Plugin Name */
+	const PLUGIN_NAME = "BansSystem";
+
 	/* Form Select Number */
 	const SELECT_IS_TOP = 1;
 	const SEARCH_PLAYER_TOP = 2;
+	const SEARCH_PLAYER_SELECT = 3;
 
 	/* Form Output */
 	const IS_ONLINE = 0;
@@ -52,10 +56,8 @@ class Ban extends PluginBase
      * @return bool
      */
     public function onCommand(CommandSender $sender, Command $command, string $label, array $args):bool
-	{
-		$cmd = $command->getName();
-
-		switch ($cmd) {
+    {
+		switch ($label) {
 			case "/ban":
 
 				$data = [
@@ -80,7 +82,7 @@ class Ban extends PluginBase
 				$pk->formId = ($formId = mt_rand(1, 999999999)); // 原因不明だがPHP_INT_MIN ・ PHP_INT_MAXだと不安定
 				$pk->formData = json_encode($data);
 
-				$sender->formId[self::SELECT_IS_TOP] = $formId;
+				$sender->formId[self::PLUGIN_NAME][self::SELECT_IS_TOP] = $formId;
 
 				$sender->dataPacket($pk);
 
